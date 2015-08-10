@@ -18,7 +18,6 @@ def main(argv):
     print
     print '%-040s -> %s' % ('[Activitity ID]', '[Content]')
 
-    # Don't execute the request until we reach the paging loop below.
     request = service.activities().list(userId=person['id'], collection='public', maxResults='10')
 
     # Loop over every activity and print the ID and a short snippet of content.
@@ -29,6 +28,7 @@ def main(argv):
 
     #  request = service.activities().list_next(request, activities_doc)
 
+    # Muestra la informacion de las activities
     while request != None:
       activities_document = request.execute()
       if 'items' in activities_document:
