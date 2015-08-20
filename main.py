@@ -1,42 +1,53 @@
 __author__ = 'nicolasbortolotti'
 
 import sys
+import csv
+import codecs
 
 from oauth2client import client
 from apiclient import sample_tools
 
 def main(argv):
+  people = raw_input('G+ id to analyze? ')
+  postnumers = int(raw_input('number of posts '))
+
   service, flags = sample_tools.init(
       argv, 'plus', 'v1', __doc__, __file__,
       scope='https://www.googleapis.com/auth/plus.me')
-
-
+    #103157264229058910056
   try:
-    person = service.people().get(userId='me').execute()
-
+    person = service.people().get(userId=people).execute()
+    # show people name
     print 'ID: %s' % person['displayName']
-    print
-    print '%-040s -> %s' % ('[Activitity ID]', '[Content]')
+    tech = ['Polymer', 'Android']
 
-    request = service.activities().list(userId=person['id'], collection='public', maxResults='10')
+    request = service.activities().list(userId=person['id'], collection='public', maxResults='1')
+    #open file
+    myfile = open(people + '.csv', 'wb')
 
-    # Loop over every activity and print the ID and a short snippet of content.
-    #while request is not None:
-    #  activities_doc = request.execute()
-    #   for item in activities_doc.get('items', []):
-    #     print '%-040s -> %s' % (item['id'], item['object']['content'][:30])
+    try:
+        writer = csv.writer(myfile)
+        writer.writerow(('id', 'content', 'test', 'replies', 'plusoners', 'resharers'))
 
-    #  request = service.activities().list_next(request, activities_doc)
+        # Information from activities
+        count = 0
+        while (count < postnumers):
+            activities_document = request.execute()
+            if 'items' in activities_document:
+                for activity in activities_document['items']:
+                    id =activity['id']
+                    content = activity['object']['content'].encode("utf-8")
+                    test =  any(x in content.split() for x in tech)
+                    replies =activity['object']['replies']['totalItems']
+                    plusoners =activity['object']['plusoners']['totalItems']
+                    resharers = activity['object']['resharers']['totalItems']
 
-    # Muestra la informacion de las activities
-    while request != None:
-      activities_document = request.execute()
-      if 'items' in activities_document:
-          print 'got page with %d' % len( activities_document['items'] )
-          for activity in activities_document['items']:
-            print activity['id'], activity['object']['content'][:15], activity['object']['plusoners']['totalItems']
 
-      request = service.activities().list_next(request, activities_document)
+                    writer.writerow((id, content, test ,replies, plusoners, resharers))
+            count = count + 1
+            request = service.activities().list_next(request, activities_document)
+    finally:
+            myfile.close()
 
   except client.AccessTokenRefreshError:
     print ('The credentials have been revoked or expired')
