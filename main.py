@@ -2,7 +2,6 @@ __author__ = 'nicolasbortolotti'
 
 import sys
 import csv
-import codecs
 
 from oauth2client import client
 from apiclient import sample_tools
@@ -14,7 +13,7 @@ def main(argv):
   service, flags = sample_tools.init(
       argv, 'plus', 'v1', __doc__, __file__,
       scope='https://www.googleapis.com/auth/plus.me')
-    #103157264229058910056
+
   try:
     person = service.people().get(userId=people).execute()
     # show people name
@@ -41,7 +40,6 @@ def main(argv):
                     replies =activity['object']['replies']['totalItems']
                     plusoners =activity['object']['plusoners']['totalItems']
                     resharers = activity['object']['resharers']['totalItems']
-
 
                     writer.writerow((id, content, test ,replies, plusoners, resharers))
             count = count + 1
