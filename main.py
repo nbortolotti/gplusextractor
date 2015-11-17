@@ -31,7 +31,7 @@ def main(argv):
 
     try:
         writer = csv.writer(myfile)
-        writer.writerow(('id', 'content', 'test', 'replies', 'plusoners', 'resharers'))
+        writer.writerow(('id', 'content', 'tests', 'replies', 'plusoners', 'resharers'))
 
         # Information from activities
         count = 0
