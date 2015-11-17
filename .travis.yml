@@ -9,7 +9,7 @@ install:
 
 script:
   - python tests/maintest.py
-  - coverage run main.py
+  - coverage run tests/maintest.py
 
 after_success:
   - codecov
